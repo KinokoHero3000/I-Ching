@@ -327,26 +327,36 @@ function showResult(){
  const sums=rounds.map(lineType);
  const pattern=sums.map(x=>x.yang?'1':'0').join('');
  const changedPattern=sums.map(x=>(x.changing?!x.yang:x.yang)?'1':'0').join('');
- const found=canonical[pattern];
- let n=found?found[0]:11, name=found?found[1]:'地天泰';
- const url=`https://ekikyo.net/64ka/${String(n).padStart(2,'0')}.html`;
- const desc=(hexagrams[pattern]||[])[3]||'卦の形を手がかりに、今の状況を振り返ってみましょう。';
- document.getElementById('symbol').textContent=({11:'䷊',12:'䷋',1:'䷀',2:'䷁'})[n]||'☯';
- document.getElementById('hexname').textContent=name;document.getElementById('hexnumber').textContent=`第${n}卦 · 本卦`;
- document.getElementById('hexsummary').textContent=desc;
- const link=document.getElementById('detailLink');link.href=url;link.textContent=`${name}（第${n}卦）の詳しい解説を開く ↗`;
- document.getElementById('urlText').textContent=url;
  const hasChanging=sums.some(x=>x.changing);
  const mode=document.getElementById('resultMode');
+ const symbolEl=document.getElementById('symbol');
+ const nameEl=document.getElementById('hexname');
+ const numberEl=document.getElementById('hexnumber');
+ const summaryEl=document.getElementById('hexsummary');
+ const link=document.getElementById('detailLink');
+ const urlText=document.getElementById('urlText');
+ function showHexInfo(p, isChanged){
+  const found=canonical[p] || byPattern.get(p);
+  const n=found?found[0]:null;
+  const name=found?found[1]:'卦の特定ができません';
+  const url=n?`https://ekikyo.net/64ka/${String(n).padStart(2,'0')}.html`:'';
+  const desc=(hexagrams[p]||[])[3]||'この卦の形を手がかりに、今の状況を振り返ってみましょう。詳しい解説も参考にしてください。';
+  symbolEl.textContent=({'1':'䷀','2':'䷁','11':'䷊','12':'䷋'})[n]||'☯';
+  nameEl.textContent=name;
+  numberEl.textContent=n?(isChanged?`第${n}卦 · 之卦（変爻後）`:`第${n}卦 · 本卦`):(isChanged?'之卦 · 変爻後':'本卦');
+  summaryEl.textContent=desc;
+  if(url){link.href=url;link.textContent=`${name}（第${n}卦）の詳しい解説を開く ↗`;link.style.display='';urlText.textContent=url;}
+  else {link.removeAttribute('href');link.textContent='詳しい解説ページを特定できません';link.style.display='none';urlText.textContent='';}
+ }
  if(resultFlipTimer){clearInterval(resultFlipTimer);resultFlipTimer=null}
  let changed=false;
- renderResultLines(sums,false);mode.textContent=hasChanging?'本卦 · 変爻を金色で表示':'本卦 · 変爻なし';
+ renderResultLines(sums,false);showHexInfo(pattern,false);mode.textContent=hasChanging?'本卦 · 変爻を金色で表示':'本卦 · 変爻なし';
  if(hasChanging){
   resultFlipTimer=setInterval(()=>{
    changed=!changed;
    renderResultLines(sums,changed);
-   mode.textContent=changed?'之卦 · 変爻が反転した形':'本卦 · 変爻を金色で表示';
-   document.getElementById('hexnumber').textContent=changed?'之卦 · 変爻を反転した卦':`第${n}卦 · 本卦`;
+   showHexInfo(changed?changedPattern:pattern,changed);
+   mode.textContent=changed?'之卦 · 変爻後の卦と解説':'本卦 · 変爻を金色で表示';
   },3200);
  }
  document.getElementById('result').classList.remove('hidden');
