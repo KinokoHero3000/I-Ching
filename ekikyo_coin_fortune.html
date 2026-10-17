@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>易経コイン占い</title>
+<style>
+:root{--ink:#f4ead2;--muted:#c2b99f;--paper:#090e1c;--card:#121b2c;--green:#193c35;--gold:#e5c27b;--gold2:#9d7434;--line:#66583c;--deep:#080c16;--glow:#f5d994}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(ellipse at 50% -12%,#35465a 0%,#111a2b 38%,#080c16 78%);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;line-height:1.7;min-height:100vh}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.17;background-image:radial-gradient(#f0d99e .7px,transparent .7px);background-size:29px 29px;mask-image:linear-gradient(to bottom,black,transparent 85%);z-index:-1}
+header{position:relative;overflow:hidden;padding:clamp(34px,7vw,72px) 18px clamp(30px,6vw,56px);text-align:center;background:linear-gradient(135deg,#17283a,#10251f 65%,#1e2937);color:#fff8e7;border-bottom:1px solid #9d7b45;box-shadow:0 15px 55px #0005}
+header:before,header:after{content:"✧";position:absolute;color:#e5c27b;opacity:.55;font-size:clamp(3rem,9vw,7rem);font-family:serif;top:15%;left:8%;transform:rotate(-15deg)}
+header:after{content:"✦";left:auto;right:9%;top:25%;font-size:clamp(2rem,6vw,4.5rem)}
+header .eyebrow{font-size:.76rem;letter-spacing:.28em;color:var(--gold);font-weight:700}
+h1{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(2rem,7vw,3.6rem);letter-spacing:.09em;margin:.4rem 0;text-shadow:0 3px 22px #e5c27b38}
+header p{margin:.65rem auto 0;max-width:640px;color:#d9dddc;font-size:clamp(.9rem,2.5vw,1.02rem)}
+main{width:min(900px,100%);margin:clamp(18px,4vw,36px) auto;padding:0 clamp(12px,3.5vw,22px) 56px}
+.panel{position:relative;background:linear-gradient(145deg,#182438f5,#101827f7);border:1px solid #7e6945;border-radius:22px;padding:clamp(18px,4.5vw,34px);margin:18px 0;box-shadow:0 14px 45px #0004,inset 0 1px #fff1;overflow:hidden}
+.panel:before{content:"";position:absolute;inset:5px;border:1px solid #d7b66b26;border-radius:17px;pointer-events:none}
+h2{font-family:"Yu Mincho","Hiragino Mincho ProN",serif;margin:0 0 8px;font-size:clamp(1.25rem,4vw,1.65rem);letter-spacing:.04em;color:#f4d99b}
+.sub{color:#c4c9c8;font-size:.94rem;margin-top:0}
+.progress{height:7px;background:#080d16;border:1px solid #7e6945;border-radius:9px;overflow:hidden;margin:20px 0}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,#8d6429,#f5dc9a,#b88a3c);width:0%;transition:width .45s ease;box-shadow:0 0 12px #e5c27b88}
+.coins{display:flex;justify-content:center;gap:clamp(9px,3vw,20px);margin:clamp(22px,5vw,34px) 0;perspective:800px}
+.coin{position:relative;width:clamp(58px,16vw,82px);height:clamp(58px,16vw,82px);flex:0 1 auto;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 33% 24%,#fff3c4 0%,#f2d98e 13%,#c99a43 35%,#79501f 65%,#d8b365 78%,#fff0b0 86%,#88602a 100%);border:2px solid #f4dca0;box-shadow:inset 0 0 0 3px #9a6e2c,inset 0 0 0 5px #f2d28a,inset 0 -7px 12px #53361780,0 8px 18px #0008;color:#533616;font-size:clamp(.9rem,3vw,1.12rem);font-weight:900;text-shadow:0 1px #fff4;letter-spacing:.04em}
+.coin:before{content:"";position:absolute;inset:8px;border:1px solid #8b6027;border-radius:50%;box-shadow:inset 0 0 0 1px #f9e5a7}
+.coin:after{content:"✦";position:absolute;top:7px;right:13px;font-size:10px;color:#fff0b6;opacity:.8}
+.coin.flip{animation:coinToss .9s cubic-bezier(.17,.67,.3,1.25);z-index:1}
+@keyframes coinToss{0%{transform:translateY(0) rotateY(0) rotateZ(0);filter:brightness(1)}24%{transform:translateY(-28px) rotateY(240deg) rotateZ(12deg);filter:brightness(1.35)}52%{transform:translateY(-8px) rotateY(600deg) rotateZ(-8deg)}78%{transform:translateY(-15px) rotateY(850deg) rotateZ(4deg)}100%{transform:translateY(0) rotateY(1080deg) rotateZ(0);filter:brightness(1)}}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+button{font:inherit;border:1px solid #a98a51;border-radius:999px;padding:12px 22px;cursor:pointer;font-weight:750;min-height:46px;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;touch-action:manipulation}
+button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 18px #0004}
+button:active:not(:disabled){transform:translateY(0) scale(.98)}
+button:focus-visible,a:focus-visible{outline:3px solid #f5d994;outline-offset:3px}
+.primary{background:linear-gradient(135deg,#f4dda0,#b98b42);color:#1a1a18;border-color:#ffedb6;box-shadow:0 4px 15px #b88a3c28}
+.secondary{background:linear-gradient(135deg,#26354a,#182335);color:#f3e6c7;border-color:#716044}
+button:disabled{opacity:.45;cursor:not-allowed}
+.status{text-align:center;font-weight:700;color:#f3dca1;min-height:1.7em}
+.throws{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+.throw{min-width:0;border:1px solid #4c4c48;border-radius:13px;padding:12px;background:linear-gradient(135deg,#1b293c,#141e2d);display:flex;align-items:center;gap:12px}
+.throw.current{border-color:#d6b56d;box-shadow:0 0 0 1px #d6b56d40,0 5px 18px #0002}
+.mini-coins{font-size:clamp(.95rem,3vw,1.2rem);letter-spacing:1px;white-space:nowrap;color:#f2d797;font-weight:700}
+.throw small{display:block;color:#c0c5c3;font-size:.82rem}
+.hex-layout{display:flex;align-items:center;justify-content:center;gap:clamp(22px,6vw,42px);flex-wrap:wrap;margin:24px 0}
+.hexagram{width:clamp(90px,27vw,126px);display:flex;flex-direction:column-reverse;gap:9px;padding:14px 10px;border:1px solid #8e7447;border-radius:12px;background:linear-gradient(145deg,#f5e4b7,#c9a765);box-shadow:inset 0 0 0 3px #f9edcf,0 8px 24px #0003}
+.line{height:clamp(9px,2.5vw,12px);position:relative}
+.line.yang{background:#17202b;border-radius:2px;box-shadow:0 1px #ffffff28}
+.line.yin{display:flex;justify-content:space-between}
+.line.yin:before,.line.yin:after{content:"";display:block;width:42%;height:100%;background:#17202b;border-radius:2px}
+.line.changing:after,.line.changing:before,.line.yang.changing{background:#a86e1c;box-shadow:0 0 8px #a86e1c66}
+.hex-meta{text-align:center;max-width:360px}
+.hex-symbol{font-size:3.2rem;font-family:serif;color:#f3dca1;text-shadow:0 0 18px #e5c27b35}
+.result-title{font-size:clamp(1.25rem,4vw,1.55rem);font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-weight:700;color:#f3dca1}
+#hexnumber{color:#d2c6a9;font-size:.9rem}
+#hexsummary{color:#e1e3dc}
+.urlbox{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:20px}
+.urlbox a{overflow-wrap:anywhere;color:#f0d18a;font-weight:750;text-underline-offset:4px}
+.note{font-size:.84rem;color:#aeb8ba;overflow-wrap:anywhere}
+.hidden{display:none}
+.legend{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;font-size:.9rem;color:#c7c8be}
+.legend span{display:flex;align-items:center;gap:7px}
+.sample{width:24px;height:8px;background:#f0d18a;display:inline-block;border-radius:1px}
+.sample.broken{background:linear-gradient(90deg,#f0d18a 0 42%,transparent 42% 58%,#f0d18a 58%)}
+footer{text-align:center;color:#aab1b0;font-size:.82rem;padding:0 18px 28px}
+@media(max-width:600px){header:before{left:2%;top:10%}header:after{right:3%;top:18%}header p{max-width:34rem}.throws{grid-template-columns:1fr}.throw{padding:11px 13px}.panel{border-radius:17px}.panel:before{inset:4px;border-radius:13px}.hex-layout{gap:18px}.hex-meta{width:100%}.actions button{flex:1 1 150px;max-width:100%}.urlbox{flex-direction:column}.urlbox button{width:100%}}
+@media(max-width:360px){.coins{gap:7px}.coin{width:55px;height:55px}.panel{padding:17px 14px}.mini-coins{letter-spacing:0}.throw{gap:8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Realistic coin casting table and progressive hexagram */
+.mat{position:relative;margin:22px 0 18px;padding:22px 10px 13px;border-radius:18px;border:1px solid #786342;background:radial-gradient(ellipse at 50% 20%,#25483e 0%,#17352e 48%,#0b211e 100%);box-shadow:inset 0 0 0 3px #0c211c,inset 0 0 24px #0008,0 10px 26px #0005;overflow:hidden}
+.mat:before{content:"";position:absolute;inset:7px;border:1px solid #d2b67530;border-radius:12px;pointer-events:none}
+.mat:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;background:repeating-linear-gradient(7deg,transparent 0 4px,#d9c28a 5px,transparent 6px 10px)}
+.mat .coins{position:relative;z-index:1;min-height:clamp(88px,22vw,116px);align-items:center;margin:0;perspective:900px}
+.mat-caption{position:relative;z-index:1;text-align:center;color:#cbb783;font-size:.65rem;letter-spacing:.2em;margin-top:8px}
+.coin{transform-style:preserve-3d;will-change:transform,filter;box-shadow:inset 0 0 0 3px #8c642a,inset 0 0 0 5px #f2d28a,inset 0 -7px 12px #53361780,0 12px 10px #0007,0 2px 0 #f8df9b}
+.coin.face-heads{background:radial-gradient(circle at 32% 23%,#fff4c7 0%,#f4d989 15%,#d3a74f 43%,#8a5c22 68%,#e7c16b 82%,#7d5425 100%);color:#4b3012}
+.coin.face-tails{background:radial-gradient(circle at 32% 23%,#f0f4f6 0%,#b8c5cc 16%,#778b98 42%,#3d5362 68%,#9aadb6 82%,#354854 100%);border-color:#d6e0e4;box-shadow:inset 0 0 0 3px #4d6673,inset 0 0 0 5px #c5d3d8,inset 0 -7px 12px #14232c99,0 12px 10px #0007,0 2px 0 #e1ebed;color:#172b37;text-shadow:0 1px #fff8}
+.coin.face-tails:before{border-color:#435d6b;box-shadow:inset 0 0 0 1px #e0e8eb}
+.coin.face-tails:after{color:#f2f7f8}
+.coin.flip{animation:luxuryFlip .55s ease both}
+@keyframes luxuryFlip{0%{transform:rotateY(0) translateY(0) scale(1)}45%{transform:rotateY(540deg) translateY(-24px) scale(1.1)}100%{transform:rotateY(1080deg) translateY(0) scale(1)}}
+.build-panel{margin-top:22px;padding:18px;border:1px solid #6d5c3d;border-radius:15px;background:linear-gradient(135deg,#101a28,#172437)}
+.build-panel h3{margin:0;color:#efd49a;font-family:"Yu Mincho","Hiragino Mincho ProN",serif;font-size:1.08rem}
+.build-wrap{display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:15px}
+.build-wrap .hexagram{width:88px;gap:6px;padding:10px 8px}
+.build-wrap .line{height:8px}
+.build-label{color:#e3d5b4;font-size:.9rem;text-align:center}
+.build-line-in{animation:lineRise .32s ease both}
+@keyframes lineRise{from{opacity:0;transform:translateY(8px) scaleX(.7)}to{opacity:1;transform:translateY(0) scaleX(1)}}
+.result-switch{display:table;margin:16px auto 0;padding:6px 18px;border:1px solid #d4b36d;border-radius:999px;background:#2b302e;color:#f5d994;font-weight:800;letter-spacing:.08em}
+#hexagram{transition:opacity .25s ease,transform .25s ease}
+#hexagram.switching{opacity:.25;transform:translateY(4px) scale(.98)}
+@media(max-width:600px){.mat{padding:18px 6px 11px;border-radius:15px}.mat .coins{min-height:94px}.build-panel{padding:14px}.build-wrap{gap:12px}.build-label{flex:1 1 140px}}
+@media(prefers-reduced-motion:reduce){.coin.flip,.build-line-in{animation:none!important}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">I CHING · COIN ORACLE</div><h1>易経コイン占い</h1><p>三枚のコインを六度投げ、あなたの卦を導きます。静かに問いを思い浮かべてから始めてください。</p></header>
+<main>
+<section class="panel" id="casting">
+<h2>一、コイントス</h2><p class="sub">各回、コインを3枚投げます。表＝3、裏＝2として合計し、下から順に六本の爻を作ります。</p>
+<div class="progress" aria-label="進行状況"><span id="progress"></span></div>
+<div class="mat" aria-label="コインを投げるマット">
+<div class="coins" aria-label="今回のコイン"><div class="coin" id="c0" aria-label="1枚目のコイン">?</div><div class="coin" id="c1" aria-label="2枚目のコイン">?</div><div class="coin" id="c2" aria-label="3枚目のコイン">?</div></div>
+<div class="mat-caption">VELVET CASTING MAT · コインを投げる</div>
+</div>
+<div class="status" id="status" aria-live="polite">準備ができたら「1回目を投げる」を押してください。</div>
+<div class="actions"><button class="primary" id="toss">1回目を投げる</button><button class="secondary" id="reset">最初から</button></div>
+<div class="throws" id="throws"></div>
+<div class="build-panel"><h3>いま積み上がっている卦</h3><p class="note">結果が出るたびに、下から順に爻が積み上がります。</p><div class="build-wrap"><div class="hexagram" id="buildHex" aria-label="途中経過の卦"></div><div class="build-label" id="buildLabel">まだ爻はありません</div></div></div>
+<p class="note">※これは伝統的な三枚コイン法を参考にした簡易版です。表裏はランダムに決まります。</p>
+</section>
+<section class="panel hidden" id="result">
+<h2>二、あなたの卦</h2><p class="sub">本卦と、変爻が変化した之卦を一定間隔で切り替えて表示します。</p>
+<div class="result-switch" id="resultMode" aria-live="polite">本卦</div>
+<div class="hex-layout"><div class="hexagram" id="hexagram" aria-label="卦の形"></div><div class="hex-meta"><div class="hex-symbol" id="symbol"></div><div class="result-title" id="hexname"></div><div id="hexnumber"></div><p id="hexsummary"></p></div></div>
+<div class="legend"><span><i class="sample"></i> 陽爻</span><span><i class="sample broken"></i> 陰爻</span><span><i class="sample" style="background:#b58b42"></i> 変爻</span></div>
+<div class="urlbox"><a id="detailLink" href="#" target="_blank" rel="noopener noreferrer">この卦の詳しい解説を開く ↗</a><button class="secondary" id="copy">URLをコピー</button></div>
+<p class="note" id="urlText"></p>
+<p class="note">解説ページは「易経ネット」の各卦のページに移動します。占いは考えを整理するための参考としてお楽しみください。</p>
+<div class="actions"><button class="primary" id="again">もう一度占う</button></div>
+</section>
+</main>
+<footer>易経コイン占い · 三枚のコイン法</footer>
+<script>
+const hexagrams = {
+"111111":[1,"乾為天","けんいてん","自ら進み、力強く道を切り開くことを象徴します。"],
+"000000":[2,"坤為地","こんいち","受け入れる力、忍耐、支えることを象徴します。"],
+"100010":[3,"水雷屯","すいらいちゅん","始まりの困難。焦らず基礎を整える時です。"],
+"010001":[4,"山水蒙","さんすいもう","学びと導きを求め、素直に知恵を得る時です。"],
+"111010":[5,"水天需","すいてんじゅ","機を待ち、準備を整えることが大切です。"],
+"010111":[6,"天水訟","てんすいしょう","対立を避け、冷静に筋道を見直しましょう。"],
+"010000":[7,"地水師","ちすいし","規律と協力によって物事を進める時です。"],
+"000010":[8,"水地比","すいちひ","信頼できる仲間との結びつきを大切に。"],
+"111011":[9,"風天小畜","ふうてんしょうちく","小さな積み重ねが力を蓄えます。"],
+"110111":[10,"天沢履","てんたくり","礼節を守り、慎重に一歩を踏み出しましょう。"],
+"000111":[11,"地天泰","ちてんたい","天地が通じ合う安泰の時。協調と繁栄がテーマです。"],
+"111000":[12,"天地否","てんちひ","停滞の時。無理に押さず、内面を整えましょう。"],
+"101111":[13,"天火同人","てんかどうじん","志を同じくする人と協力することが鍵です。"],
+"111101":[14,"火天大有","かてんたいゆう","豊かさを活かし、謙虚に分かち合いましょう。"],
+"000100":[15,"地山謙","ちざんけん","謙虚さが信頼を呼び、物事を安定させます。"],
+"001000":[16,"雷地豫","らいちよ","前向きな準備と心のゆとりを大切に。"],
+"100110":[17,"沢雷随","たくらいずい","状況を見極め、柔軟に流れに従いましょう。"],
+"011001":[18,"山風蠱","さんぷうこ","古い問題を見直し、立て直す時です。"],
+"000011":[19,"地沢臨","ちたくりん","積極的に関わり、成長の機会を迎えます。"],
+"110000":[20,"風地観","ふうちかん","一歩引いて全体を観察することが大切です。"],
+"100101":[21,"火雷噬嗑","からいぜいごう","障害に向き合い、明確な判断で解決しましょう。"],
+"101001":[22,"山火賁","さんかひ","外見だけでなく中身を整える時です。"],
+"000001":[23,"山地剥","さんちはく","手放すものを見極め、守りを固めましょう。"],
+"100000":[24,"地雷復","ちらいふく","回復と再出発の兆し。小さく始めましょう。"],
+"100111":[25,"天雷无妄","てんらいむぼう","自然体で誠実に。作為より正直さを大切に。"],
+"111001":[26,"山天大畜","さんてんたいちく","力を蓄え、学びと節度で成長する時です。"],
+"100001":[27,"山雷頤","さんらいい","言葉と食、日々の養いを見直しましょう。"],
+"011110":[28,"沢風大過","たくふうたいか","負担が大きい時。支えを得てバランスを取りましょう。"],
+"010010":[29,"坎為水","かんいすい","困難の中でも誠実さを保ち、一歩ずつ進みます。"],
+"101101":[30,"離為火","りいか","明晰さとつながりを大切にし、道を照らしましょう。"],
+"011100":[31,"沢山咸","たくざんかん","感応と心の交流。相手への思いやりが鍵です。"],
+"001110":[32,"雷風恒","らいふうこう","継続と一貫性が力になります。"],
+"001111":[33,"天山遯","てんざんとん","退く勇気を持ち、力を温存しましょう。"],
+"111100":[34,"雷天大壮","らいてんたいそう","勢いのある時こそ節度を忘れずに。"],
+"000101":[35,"火地晋","かちしん","前進と評価の機会。明るく取り組みましょう。"],
+"101000":[36,"地火明夷","ちかめいい","力を目立たせず、内面の明かりを守る時です。"],
+"101011":[37,"風火家人","ふうかかじん","身近な人との役割と信頼を整えましょう。"],
+"110101":[38,"火沢睽","かたくけい","違いを認め、小さな共通点から探しましょう。"],
+"010001":[39,"水山蹇","すいざんけん","障害がある時。助けを求め、迂回路を探しましょう。"],
+"100010":[40,"雷水解","らいすいかい","緊張がほどける兆し。問題を一つずつ解きましょう。"],
+"011000":[41,"山沢損","さんたくそん","余分を減らし、本当に大切なものに集中しましょう。"],
+"000110":[42,"風雷益","ふうらいえき","成長と相互扶助。良い変化を取り入れましょう。"],
+"111110":[43,"沢天夬","たくてんかい","決断の時。明確さと慎重さを両立しましょう。"],
+"011111":[44,"天風姤","てんぷうこう","思いがけない出会いや変化に注意を向けましょう。"],
+"000110":[46,"地風升","ちふうしょう","着実に上昇する時。段階を踏んで進みましょう。"],
+"011010":[47,"沢水困","たくすいこん","苦しい時こそ、信念を保ち休息を取りましょう。"],
+"010110":[48,"水風井","すいふうせい","共有できる知恵や資源を手入れしましょう。"],
+"011101":[49,"沢火革","たくかかく","古い形を改める時。変化の理由を明確に。"],
+"101110":[50,"火風鼎","かふうてい","人や知恵を育て、新しい価値を生みましょう。"],
+"100100":[51,"震為雷","しんいらい","驚きの中でも落ち着きを取り戻しましょう。"],
+"001001":[52,"艮為山","ごんいざん","止まるべき時を知り、心を静めましょう。"],
+"001011":[53,"風山漸","ふうざんぜん","ゆっくり着実に進むことが実を結びます。"],
+"110100":[54,"雷沢帰妹","らいたくきまい","勢いだけで決めず、立場と時機を確かめましょう。"],
+"101100":[55,"雷火豊","らいかほう","充実の時。盛んな時ほど先を見通しましょう。"],
+"001101":[56,"火山旅","かざんりょ","変化の中では慎みと柔軟さが助けになります。"],
+"011011":[57,"巽為風","そんいふう","柔らかく働きかけ、粘り強く伝えましょう。"],
+"110110":[58,"兌為沢","だいたく","喜びと対話を通じて関係を育てましょう。"],
+"010011":[59,"風水渙","ふうすいかん","滞りをほどき、心を通わせる時です。"],
+"110010":[60,"水沢節","すいたくせつ","節度と境界を整えることで安定します。"],
+"110011":[61,"風沢中孚","ふうたくちゅうふ","誠実さと信頼が人を動かします。"],
+"001100":[62,"雷山小過","らいざんしょうか","大きく出るより、細部を丁寧に進めましょう。"],
+"101010":[63,"水火既済","すいかきせい","一段落した後こそ、確認と維持が大切です。"],
+"010101":[64,"火水未済","かすいびせい","完成の手前。焦らず仕上げを整えましょう。"]
+};
+const order = [
+[1,"乾為天","111111"],[2,"坤為地","000000"],[3,"水雷屯","100010"],[4,"山水蒙","010001"],[5,"水天需","111010"],[6,"天水訟","010111"],[7,"地水師","010000"],[8,"水地比","000010"],[9,"風天小畜","111011"],[10,"天沢履","110111"],[11,"地天泰","000111"],[12,"天地否","111000"],[13,"天火同人","101111"],[14,"火天大有","111101"],[15,"地山謙","000100"],[16,"雷地豫","001000"],[17,"沢雷随","100110"],[18,"山風蠱","011001"],[19,"地沢臨","000011"],[20,"風地観","110000"],[21,"火雷噬嗑","100101"],[22,"山火賁","101001"],[23,"山地剥","000001"],[24,"地雷復","100000"],[25,"天雷无妄","100111"],[26,"山天大畜","111001"],[27,"山雷頤","100001"],[28,"沢風大過","011110"],[29,"坎為水","010010"],[30,"離為火","101101"],[31,"沢山咸","011100"],[32,"雷風恒","001110"],[33,"天山遯","001111"],[34,"雷天大壮","111100"],[35,"火地晋","000101"],[36,"地火明夷","101000"],[37,"風火家人","101011"],[38,"火沢睽","110101"],[39,"水山蹇","010001"],[40,"雷水解","100010"],[41,"山沢損","011000"],[42,"風雷益","000110"],[43,"沢天夬","111110"],[44,"天風姤","011111"],[45,"沢地萃","000110"],[46,"地風升","000110"],[47,"沢水困","011010"],[48,"水風井","010110"],[49,"沢火革","011101"],[50,"火風鼎","101110"],[51,"震為雷","100100"],[52,"艮為山","001001"],[53,"風山漸","001011"],[54,"雷沢帰妹","110100"],[55,"雷火豊","101100"],[56,"火山旅","001101"],[57,"巽為風","011011"],[58,"兌為沢","110110"],[59,"風水渙","010011"],[60,"水沢節","110010"],[61,"風沢中孚","110011"],[62,"雷山小過","001100"],[63,"水火既済","101010"],[64,"火水未済","010101"]
+];
+// The lower-to-upper line pattern uniquely identifies the hexagram. Use canonical binary trigram pattern to identify it.
+const byPattern = new Map(order.map(([n,name,pattern])=>[pattern,{n,name}]));
+// Correct a few duplicate/mistyped entries via standard hexagram line patterns (bottom to top).
+const canonical = {
+"111000":[11,"地天泰"],
+"111001":[26,"山天大畜"],
+"111010":[5,"水天需"],
+"111011":[9,"風天小畜"],
+"111100":[34,"雷天大壮"],
+"111101":[14,"火天大有"],
+"111110":[43,"沢天夬"],
+"111111":[1,"乾為天"],
+"110000":[19,"地沢臨"],
+"110001":[41,"山沢損"],
+"110010":[60,"水沢節"],
+"110011":[61,"風沢中孚"],
+"110100":[54,"雷沢帰妹"],
+"110101":[38,"火沢睽"],
+"110110":[58,"兌為沢"],
+"110111":[10,"天沢履"],
+"101000":[36,"地火明夷"],
+"101001":[22,"山火賁"],
+"101010":[63,"水火既済"],
+"101011":[37,"風火家人"],
+"101100":[55,"雷火豊"],
+"101101":[30,"離為火"],
+"101110":[49,"沢火革"],
+"101111":[13,"天火同人"],
+"100000":[24,"地雷復"],
+"100001":[27,"山雷頤"],
+"100010":[3,"水雷屯"],
+"100011":[42,"風雷益"],
+"100100":[51,"震為雷"],
+"100101":[21,"火雷噬嗑"],
+"100110":[17,"沢雷随"],
+"100111":[25,"天雷无妄"],
+"011000":[46,"地風升"],
+"011001":[18,"山風蠱"],
+"011010":[48,"水風井"],
+"011011":[57,"巽為風"],
+"011100":[32,"雷風恒"],
+"011101":[50,"火風鼎"],
+"011110":[28,"沢風大過"],
+"011111":[44,"天風姤"],
+"010000":[7,"地水師"],
+"010001":[4,"山水蒙"],
+"010010":[29,"坎為水"],
+"010011":[59,"風水渙"],
+"010100":[40,"雷水解"],
+"010101":[64,"火水未済"],
+"010110":[47,"沢水困"],
+"010111":[6,"天水訟"],
+"001000":[15,"地山謙"],
+"001001":[52,"艮為山"],
+"001010":[39,"水山蹇"],
+"001011":[53,"風山漸"],
+"001100":[62,"雷山小過"],
+"001101":[56,"火山旅"],
+"001110":[31,"沢山咸"],
+"001111":[33,"天山遯"],
+"000000":[2,"坤為地"],
+"000001":[23,"山地剥"],
+"000010":[8,"水地比"],
+"000011":[20,"風地観"],
+"000100":[16,"雷地豫"],
+"000101":[35,"火地晋"],
+"000110":[45,"沢地萃"],
+"000111":[12,"天地否"]
+};
+let rounds=[];
+const tossBtn=document.getElementById('toss'), resetBtn=document.getElementById('reset');
+const names=['c0','c1','c2'].map(id=>document.getElementById(id));
+function coinRound(){return Array.from({length:3},()=>Math.random()<.5?3:2)}
+function lineType(vals){const sum=vals.reduce((a,b)=>a+b,0);return {sum, yang:sum===7||sum===9, changing:sum===6||sum===9, label:({6:'老陰（陰・変爻）',7:'少陽（陽）',8:'少陰（陰）',9:'老陽（陽・変爻）'})[sum]}}
+function renderThrows(){
+ const host=document.getElementById('throws');host.innerHTML='';
+ rounds.forEach((r,i)=>{const info=lineType(r);const el=document.createElement('div');el.className='throw'+(i===rounds.length-1?' current':'');
+ el.innerHTML=`<div class="mini-coins">${r.map(v=>v===3?'表':'裏').join(' ')}</div><div><strong>${i+1}回目：合計${info.sum}</strong><small>${info.label}</small></div>`;host.appendChild(el)});
+ document.getElementById('progress').style.width=(rounds.length/6*100)+'%';
+}
+let tossing=false;
+function updateBuild(){
+ const host=document.getElementById('buildHex');host.innerHTML='';
+ rounds.forEach((r,i)=>{
+  const x=lineType(r),el=document.createElement('div');
+  el.className='line '+(x.yang?'yang':'yin')+(x.changing?' changing':'')+' build-line-in';
+  el.title=`${i+1}爻：${x.label}`;el.style.animationDelay=(i*.045)+'s';host.appendChild(el);
+ });
+ document.getElementById('buildLabel').textContent=rounds.length===0?'まだ爻はありません':`${rounds.length}/6 本の爻が完成 · ${rounds.length===6?'卦が完成しました':'下から '+rounds.length+' 本目まで'}`;
+}
+function toss(){
+ if(rounds.length>=6||tossing)return;
+ tossing=true;tossBtn.disabled=true;
+ document.getElementById('status').textContent='コインがマットに落ちています…';
+ names.forEach((coin,i)=>{
+  coin.classList.remove('flip','face-heads','face-tails');coin.textContent='…';
+  
+  void coin.offsetWidth;coin.classList.add('flip');
+ });
+ // Results are generated before the animation, but revealed only after the coins settle.
+ const r=coinRound();
+ window.setTimeout(()=>{
+  rounds.push(r);
+  r.forEach((v,i)=>{
+   names[i].classList.remove('flip');names[i].classList.add(v===3?'face-heads':'face-tails');
+   names[i].textContent=v===3?'表':'裏';
+   names[i].setAttribute('aria-label',`${i+1}枚目：${v===3?'表（金色）':'裏（銀青色）'}`);
+  });
+  renderThrows();updateBuild();tossing=false;
+  if(rounds.length<6){
+   tossBtn.disabled=false;tossBtn.textContent=`${rounds.length+1}回目を投げる`;
+   document.getElementById('status').textContent=`${rounds.length}回目：${r.filter(v=>v===3).length}枚が表。次の爻を積み上げます。`;
+  }else{
+   tossBtn.disabled=true;document.getElementById('status').textContent='六本の爻がそろいました。卦の形を確認してください。';showResult();
+  }
+ },620);
+}
+let resultFlipTimer=null;
+function renderResultLines(sums,changed){
+ const host=document.getElementById('hexagram');host.classList.add('switching');
+ window.setTimeout(()=>{
+  host.innerHTML='';
+  sums.forEach((x,i)=>{
+   const yang=changed&&x.changing?!x.yang:x.yang;
+   const el=document.createElement('div');el.className='line '+(yang?'yang':'yin')+(!changed&&x.changing?' changing':'');
+   el.title=`${i+1}爻：${changed&&x.changing?'変化後':x.label}`;host.appendChild(el);
+  });
+  host.classList.remove('switching');
+ },160);
+}
+function showResult(){
+ const sums=rounds.map(lineType);
+ const pattern=sums.map(x=>x.yang?'1':'0').join('');
+ const changedPattern=sums.map(x=>(x.changing?!x.yang:x.yang)?'1':'0').join('');
+ const found=canonical[pattern];
+ let n=found?found[0]:11, name=found?found[1]:'地天泰';
+ const url=`https://ekikyo.net/64ka/${String(n).padStart(2,'0')}.html`;
+ const desc=(hexagrams[pattern]||[])[3]||'卦の形を手がかりに、今の状況を振り返ってみましょう。';
+ document.getElementById('symbol').textContent=({11:'䷊',12:'䷋',1:'䷀',2:'䷁'})[n]||'☯';
+ document.getElementById('hexname').textContent=name;document.getElementById('hexnumber').textContent=`第${n}卦 · 本卦`;
+ document.getElementById('hexsummary').textContent=desc;
+ const link=document.getElementById('detailLink');link.href=url;link.textContent=`${name}（第${n}卦）の詳しい解説を開く ↗`;
+ document.getElementById('urlText').textContent=url;
+ const hasChanging=sums.some(x=>x.changing);
+ const mode=document.getElementById('resultMode');
+ if(resultFlipTimer){clearInterval(resultFlipTimer);resultFlipTimer=null}
+ let changed=false;
+ renderResultLines(sums,false);mode.textContent=hasChanging?'本卦 · 変爻を金色で表示':'本卦 · 変爻なし';
+ if(hasChanging){
+  resultFlipTimer=setInterval(()=>{
+   changed=!changed;
+   renderResultLines(sums,changed);
+   mode.textContent=changed?'之卦 · 変爻が反転した形':'本卦 · 変爻を金色で表示';
+   document.getElementById('hexnumber').textContent=changed?'之卦 · 変爻を反転した卦':`第${n}卦 · 本卦`;
+  },3200);
+ }
+ document.getElementById('result').classList.remove('hidden');
+ document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function reset(){rounds=[];tossing=false;if(resultFlipTimer){clearInterval(resultFlipTimer);resultFlipTimer=null}tossBtn.disabled=false;tossBtn.textContent='1回目を投げる';names.forEach((x,i)=>{x.textContent='?';x.classList.remove('face-heads','face-tails','flip');x.setAttribute('aria-label',`${i+1}枚目のコイン`)});document.getElementById('status').textContent='準備ができたら「1回目を投げる」を押してください。';document.getElementById('throws').innerHTML='';document.getElementById('progress').style.width='0%';document.getElementById('result').classList.add('hidden');document.getElementById('resultMode').textContent='本卦';document.getElementById('hexnumber').textContent='';updateBuild();document.getElementById('casting').scrollIntoView({behavior:'smooth'})}
+updateBuild();tossBtn.addEventListener('click',toss);resetBtn.addEventListener('click',reset);document.getElementById('again').addEventListener('click',reset);
+document.getElementById('copy').addEventListener('click',async()=>{const text=document.getElementById('detailLink').href;try{await navigator.clipboard.writeText(text);document.getElementById('copy').textContent='コピーしました'}catch(e){window.prompt('このURLをコピーしてください',text)}});
+</script>
+</body></html>
